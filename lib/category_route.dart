@@ -1,4 +1,5 @@
 import 'package:converter_app/category.dart';
+import 'package:converter_app/unit.dart';
 import 'package:flutter/material.dart';
 
 final _backgroundColor = Colors.green[100];
@@ -23,13 +24,6 @@ class CategoryRoute extends StatelessWidget {
     'Currency',
   ];
 
-  Widget _buildCategoryWidgets(List<Widget> categories) {
-    return ListView.builder(
-      itemBuilder: (BuildContext context, int index) => categories[index],
-      itemCount: categories.length,
-    );
-  }
-
   static const _baseColors = <Color>[
     Colors.teal,
     Colors.orange,
@@ -41,6 +35,24 @@ class CategoryRoute extends StatelessWidget {
     Colors.red,
   ];
 
+  Widget _buildCategoryWidgets(List<Widget> categories) {
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) => categories[index],
+      itemCount: categories.length,
+    );
+  }
+
+  /// Returns a list of mock [Unit]s.
+  List<Unit> _retrieveUnitList(String categoryName) {
+    return List.generate(10, (int i) {
+      i += 1;
+      return Unit(
+        name: '$categoryName Unit $i',
+        conversion: i.toDouble(),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final categories = <Category>[];
@@ -51,6 +63,7 @@ class CategoryRoute extends StatelessWidget {
           name: _categoryNames[i],
           color: _baseColors[i],
           iconLocation: Icons.cake,
+          units: _retrieveUnitList(_categoryNames[i]),
         ),
       );
     }
