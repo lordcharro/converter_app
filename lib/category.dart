@@ -82,6 +82,7 @@ class Category extends StatelessWidget {
             backgroundColor: color,
           ),
           body: ConverterRoute(
+            color: color,
             units: units,
           ),
         );
