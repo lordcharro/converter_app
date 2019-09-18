@@ -14,11 +14,11 @@ class Category extends StatelessWidget {
   /// Creates a [Category].
   /// A [Category] saves the name of the Category (e.g. 'Length'), its color for
   /// the UI, and the icon that represents it (e.g. a ruler).
-  const Category(
-      {Key key,
-      @required this.name,
-      @required this.color,
-      @required this.iconLocation});
+  const Category({Key key, @required this.name, @required this.color, @required this.iconLocation})
+      : assert(name != null),
+        assert(color != null),
+        assert(iconLocation != null),
+        super(key: key);
 
   /// Builds a custom widget that shows [Category] information.
   /// This information includes the icon, name, and color for the [Category].
@@ -32,7 +32,9 @@ class Category extends StatelessWidget {
           borderRadius: _borderRadius,
           highlightColor: color,
           splashColor: color,
-          onTap: () => print("We tap the line"),
+          onTap: () {
+            print("We tap the line");
+          },
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
