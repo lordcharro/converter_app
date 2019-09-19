@@ -94,42 +94,55 @@ class _CategoryRouteState extends State<CategoryRoute> {
     }
   }
 
-  Widget _buildCategoryWidgets() {
-    return ListView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        return CategoryTile(
-          category: _categories[index],
-          onTap: _onCategoryTap,
-        );
-      },
-      itemCount: _categories.length,
-    );
-  }
-
-  /// Returns a list of mock [Unit]s.
-  List<Unit> _retrieveUnitList(String categoryName) {
-    return List.generate(10, (int i) {
-      i += 1;
-      return Unit(
-        name: '$categoryName Unit $i',
-        conversion: i.toDouble(),
+  Widget _buildCategoryWidgets()
+  {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return CategoryTile(
+            category: _categories[index],
+            onTap: _onCategoryTap,
+          );
+        },
+        itemCount: _categories.length,
       );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final listView = Padding(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
-      child: _buildCategoryWidgets(),
-    );
-
-    return Backdrop(
-      currentCategory: _currentCategory == null ? _defaultCategory : _currentCategory,
-      frontPanel: _currentCategory == null ? UnitConverter(category: _defaultCategory) : UnitConverter(category: _currentCategory),
-      backPanel: listView,
-      frontTitle: Text('Unit Converter'),
-      backTitle: Text('Select a Category'),
-    );
-  }
+    } else {
+      return GridView.count(
+        crossAxisCount: 2,
+        childAspectRatio: 3.0,
+        children: _categories.map((Category c) {
+          return CategoryTile(
+            category: c,
+            onTap: _onCategoryTap,
+          );
+        }).toList(),
+      );
+    }
 }
+
+/// Returns a list of mock [Unit]s.
+List<Unit> _retrieveUnitList(String categoryName) {
+  return List.generate(10, (int i) {
+    i += 1;
+    return Unit(
+      name: '$categoryName Unit $i',
+      conversion: i.toDouble(),
+    );
+  });
+}
+
+@override
+Widget build(BuildContext context) {
+  final listView = Padding(
+    padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
+    child: _buildCategoryWidgets(),
+  );
+
+  return Backdrop(
+    currentCategory: _currentCategory == null ? _defaultCategory : _currentCategory,
+    frontPanel: _currentCategory == null ? UnitConverter(category: _defaultCategory) : UnitConverter(category: _currentCategory),
+    backPanel: listView,
+    frontTitle: Text('Unit Converter'),
+    backTitle: Text('Select a Category'),
+  );
+}}

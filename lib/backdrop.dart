@@ -258,6 +258,7 @@ class _BackdropState extends State<Backdrop> with SingleTickerProviderStateMixin
       body: LayoutBuilder(
         builder: _buildStack,
       ),
+      resizeToAvoidBottomPadding: false,
     );
   }
 }
