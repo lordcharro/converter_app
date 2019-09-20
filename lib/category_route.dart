@@ -26,6 +26,7 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Category _defaultCategory;
   Category _currentCategory;
   final _categories = <Category>[];
+  var isLargeScreen = false;
 
   static const _baseColors = <ColorSwatch>[
     ColorSwatch(0xFF6AB7A8, {
@@ -174,19 +175,65 @@ class _CategoryRouteState extends State<CategoryRoute> {
     }
   }
 
+  Widget _forTablets() {
+    return ListView.builder(
+      itemBuilder: (BuildContext context, int index) {
+        var _category = _categories[index];
+        return CategoryTile(
+          category: _category,
+          onTap: _category.name == apiCategory['name'] && _category.units.isEmpty ? null : _onCategoryTap,
+        );
+      },
+      itemCount: _categories.length,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final listView = Padding(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
-      child: _buildCategoryWidgets(),
-    );
+    if (MediaQuery.of(context).size.width > 600) {
+      isLargeScreen = true;
+    } else {
+      isLargeScreen = false;
+    }
 
-    return Backdrop(
-      currentCategory: _currentCategory == null ? _defaultCategory : _currentCategory,
-      frontPanel: _currentCategory == null ? UnitConverter(category: _defaultCategory) : UnitConverter(category: _currentCategory),
-      backPanel: listView,
-      frontTitle: Text('Unit Converter'),
-      backTitle: Text('Select a Category'),
+    return Padding(
+      padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
+      child: OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          if (isLargeScreen) {
+            var _categoryColor = _currentCategory == null ? _defaultCategory : _currentCategory;
+            return Scaffold(
+              appBar: AppBar(
+                title: Text('Unit Converter'),
+                backgroundColor: _categoryColor.color,
+                elevation: 0.0,
+              ),
+              body: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
+                    child: _forTablets(),
+                  ),
+                ),
+                Expanded(child: _currentCategory == null ? UnitConverter(category: _defaultCategory) : UnitConverter(category: _currentCategory)),
+              ]),
+            );
+          } else {
+            final listView = Padding(
+              padding: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 48.0),
+              child: _buildCategoryWidgets(),
+            );
+
+            return Backdrop(
+              currentCategory: _currentCategory == null ? _defaultCategory : _currentCategory,
+              frontPanel: _currentCategory == null ? UnitConverter(category: _defaultCategory) : UnitConverter(category: _currentCategory),
+              backPanel: listView,
+              frontTitle: Text('Unit Converter'),
+              backTitle: Text('Select a Category'),
+            );
+          }
+        },
+      ),
     );
   }
 }
