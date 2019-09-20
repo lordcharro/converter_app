@@ -7,6 +7,8 @@ import 'package:converter_app/unit.dart';
 import 'package:converter_app/unit_converter.dart';
 import 'package:flutter/material.dart';
 
+import 'api.dart';
+
 /// Category Route (screen).
 /// This is the 'home' screen of the Unit Converter. It shows a header and
 /// a list of [Categories].
@@ -78,13 +80,24 @@ class _CategoryRouteState extends State<CategoryRoute> {
     });
   }
 
-  Future<void> _retrieveLocalCategories() async{
+  // wait for our JSON asset to be loaded in (async).
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    // We have static unit conversions located in our
+    // assets/data/regular_units.json
+    if (_categories.isEmpty) {
+      await _retrieveLocalCategories();
+      await _retrieveApiCategory();
+    }
+  }
 
+  Future<void> _retrieveLocalCategories() async {
     final json = DefaultAssetBundle.of(context).loadString('assets/data/regular_units.json');
     final data = JsonDecoder().convert(await json);
 
-    if(data is! Map){
-      throw('Data retrived from API is not a Map');
+    if (data is! Map) {
+      throw ('Data retrived from API is not a Map');
     }
     var categoryIndex = 0;
     data.keys.forEach((key) {
@@ -106,14 +119,32 @@ class _CategoryRouteState extends State<CategoryRoute> {
     });
   }
 
-  // wait for our JSON asset to be loaded in (async).
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-    // We have static unit conversions located in our
-    // assets/data/regular_units.json
-    if (_categories.isEmpty) {
-      await _retrieveLocalCategories();
+  /// Retrieves a [Category] and its [Unit]s from an API on the web
+  Future<void> _retrieveApiCategory() async {
+    setState(() {
+      _categories.add(Category(
+        name: apiCategory['name'],
+        units: [],
+        color: _baseColors.last,
+        iconLocation: _icons.last,
+      ));
+    });
+    final api = Api();
+    final jsonUnits = await api.getUnits(apiCategory['route']);
+    if (jsonUnits != null) {
+      final units = <Unit>[];
+      for (var unit in jsonUnits) {
+        units.add(Unit.fromJson(unit));
+      }
+      setState(() {
+        _categories.removeLast();
+        _categories.add(Category(
+          name: apiCategory['name'],
+          units: units,
+          color: _baseColors.last,
+          iconLocation: _icons.last,
+        ));
+      });
     }
   }
 
@@ -141,7 +172,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
