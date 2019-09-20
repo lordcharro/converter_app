@@ -1,16 +1,11 @@
 import 'package:converter_app/unit.dart';
 import 'package:flutter/material.dart';
 
-final _rowHeight = 100.0;
-final _borderRadius = BorderRadius.circular(_rowHeight / 2);
-
 /// A custom [Category] widget.
-/// The widget is composed on an [Icon] and [Text]. Tapping on the widget shows
-/// a colored [InkWell] animation.
 class Category {
   final String name;
   final ColorSwatch color;
-  final IconData iconLocation;
+  final String iconLocation;
   final List<Unit> units;
 
   /// Creates a [Category].
@@ -21,5 +16,4 @@ class Category {
         assert(color != null),
         assert(iconLocation != null),
         assert(units != null);
-
 }
